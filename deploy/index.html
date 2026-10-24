@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>朗拾花语2026万圣节地图</title>
+  <style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #160a28;
+  color: #f5e9ff;
+}
+
+.site-header {
+  padding: 22px 16px 12px;
+  text-align: center;
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: 26px;
+  color: #ffb347;
+  letter-spacing: 1px;
+}
+
+.site-header .subtitle {
+  margin: 6px 0 14px;
+  color: #cfa9f5;
+  font-size: 14px;
+}
+
+#search {
+  width: 100%;
+  max-width: 460px;
+  padding: 12px 16px;
+  font-size: 16px;
+  border-radius: 24px;
+  border: 2px solid #7a3f9e;
+  background: #241338;
+  color: #ffffff;
+}
+
+#search:focus {
+  outline: none;
+  border-color: #ff9f1c;
+}
+
+.map-wrap {
+  overflow-x: auto;
+  padding: 8px 0;
+}
+
+#map {
+  display: block;
+  width: 100%;
+  min-width: 920px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.legend {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 10px 16px 16px;
+  font-size: 14px;
+  color: #d9c3f0;
+}
+
+.legend .dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ff9f1c;
+  margin-right: 4px;
+  vertical-align: -2px;
+}
+
+.legend .sw {
+  display: inline-block;
+  width: 22px;
+  height: 14px;
+  border-radius: 4px;
+  margin-right: 4px;
+  vertical-align: -2px;
+}
+
+.legend .river { background: #2a6fb0; }
+.legend .road { background: #5a5560; }
+
+.list-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 16px 60px;
+}
+
+.list-wrap h2 {
+  color: #ffb347;
+  font-size: 20px;
+}
+
+.plot-group { margin-bottom: 18px; }
+.plot-group h3 { color: #ffd166; margin: 0 0 8px; font-size: 18px; }
+
+.building-group {
+  background: #241338;
+  border: 1px solid #3d2460;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.building-group .b-title { font-size: 16px; color: #ffffff; }
+.candy-count { color: #ff9f1c; font-weight: bold; }
+
+.building-group ul { list-style: none; margin: 8px 0 0; padding: 0; }
+.building-group li { padding: 3px 0; color: #d9c3f0; font-size: 15px; }
+
+.empty { color: #cfa9f5; text-align: center; }
+
+.building { cursor: pointer; }
+.building.has-candy:hover rect { filter: brightness(1.3); }
+.building.dim, .badge.dim { opacity: 0.25; }
+.building.flash rect { animation: flash 1s ease; }
+
+@keyframes flash {
+  0% { fill: #ff9f1c; }
+  100% { fill: #4a3b5c; }
+}
+
+.sheet { position: fixed; inset: 0; z-index: 50; }
+.sheet-mask { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.5); }
+.sheet-body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 70vh;
+  overflow: auto;
+  background: #241338;
+  border-radius: 20px 20px 0 0;
+  padding: 20px;
+}
+.sheet-close {
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 26px;
+  cursor: pointer;
+}
+.sheet-body h3 { margin: 0 0 4px; color: #ffb347; }
+.sheet-sub { margin: 0 0 12px; color: #cfa9f5; font-size: 14px; }
+.floor-map { margin-top: 4px; }
+.floor { display: flex; align-items: flex-start; padding: 8px 0; border-top: 1px solid #3d2460; }
+.floor-label { flex: 0 0 44px; font-weight: bold; color: #ffb347; font-size: 15px; padding-top: 4px; }
+.floor-units { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.unit-card { background: #2d1a45; border: 1px solid #4a2f72; border-radius: 10px; padding: 8px 10px; }
+.unit-card .addr { color: #ffd166; font-weight: bold; font-size: 15px; }
+.unit-card .kid { color: #f5e9ff; font-size: 14px; margin-top: 2px; }
+
+@media (min-width: 800px) {
+  .sheet-body {
+    left: 50%;
+    right: auto;
+    width: 420px;
+    transform: translateX(-50%);
+    bottom: 40px;
+    border-radius: 20px;
+  }
+}
+
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <h1>🎃 朗拾花语2026万圣节地图</h1>
+    <p class="subtitle">参与家庭 <span id="total">0</span> 户</p>
+    <input id="search" type="search" placeholder="搜索名字 / 地址（如 8-31-601）">
+  </header>
+
+  <section class="map-wrap">
+    <svg id="map" viewBox="0 0 1000 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="小区讨糖地图"></svg>
+  </section>
+
+  <section class="legend">
+    <span><i class="dot"></i>发糖家庭（🎃 后数字为该栋发糖户数）</span>
+  </section>
+
+  <section class="list-wrap">
+    <h2>参与家庭名单</h2>
+    <div id="list"></div>
+  </section>
+
+  <div id="sheet" class="sheet" hidden>
+    <div class="sheet-mask" data-close></div>
+    <div class="sheet-body">
+      <button class="sheet-close" data-close>×</button>
+      <div id="sheet-content"></div>
+    </div>
+  </div>
+
+  <script>
+const FAMILIES = [
+  { plot: '6-3', building: 8, unit: 31, room: 601, name: '果果', age: '6岁' },
+  { plot: '6-5', building: 16, unit: 16, room: 1002, name: '王睿霖', age: '5周' },
+  { plot: '5-5', building: 5, unit: 12, room: 804, name: '翕翕', age: '6岁' },
+  { plot: '5-3', building: 2, unit: 16, room: 702, name: '辰辰', age: '6岁' },
+  { plot: '5-3', building: 3, unit: 8, room: 201, name: '帅帅、姐姐', age: '6岁 / 12岁' },
+  { plot: '5-5', building: 5, unit: 12, room: 1403, name: '可乐', age: '8岁' },
+  { plot: '5-5', building: 5, unit: 12, room: 702, name: '可可', age: '6岁' },
+  { plot: '5-3', building: 4, unit: 10, room: 202, name: '小西瓜', age: '6岁' },
+  { plot: '6-3', building: 13, unit: 6, room: 403, name: '小糖果', age: '6岁' },
+  { plot: '6-5', building: 18, unit: 12, room: 1601, name: '肉肉', age: '5岁' },
+  { plot: '6-3', building: 11, unit: 16, room: 302, name: '芒果', age: '7岁' },
+  { plot: '5-3', building: 2, unit: 16, room: 102, name: '小月芽', age: '8岁' },
+  { plot: '5-3', building: 2, unit: 15, room: 401, name: '小菠萝', age: '7岁' },
+  { plot: '5-3', building: 3, unit: 8, room: 101, name: '恩恩', age: '8岁' },
+  { plot: '5-3', building: 1, unit: 18, room: 602, name: '符宝', age: '6岁' },
+  { plot: '5-3', building: 1, unit: 18, room: 202, name: '茂茂', age: '4岁半' },
+  { plot: '5-5', building: 5, unit: 12, room: 2604, name: '泡泡', age: '快三岁' },
+  { plot: '5-3', building: 2, unit: 15, room: 1101, name: '', age: '' },
+  { plot: '5-3', building: 4, unit: 11, room: 1401, name: '敦敦', age: '7岁' },
+  { plot: '5-3', building: 2, unit: 15, room: 2401, name: '楚楚', age: '3岁半' },
+  { plot: '5-3', building: 4, unit: 11, room: 502, name: '馨宝', age: '8岁' },
+  { plot: '6-3', building: 8, unit: 32, room: 1101, name: '九九、依依', age: '5岁半 / 11岁' },
+  { plot: '6-3', building: 11, unit: 15, room: 901, name: '鸣鸣', age: '8岁半' },
+  { plot: '5-5', building: 6, unit: 3, room: 1502, name: '萱宝', age: '7岁半' },
+  { plot: '5-5', building: 6, unit: 3, room: 1101, name: '桃桃', age: '3岁' },
+  { plot: '6-3', building: 8, unit: 32, room: 2502, name: '小花猫、小开心', age: '8岁 / 8岁' },
+  { plot: '5-5', building: 5, unit: 12, room: 2102, name: '川川', age: '6岁' },
+  { plot: '5-5', building: 5, unit: 12, room: 401, name: '了了', age: '3岁' },
+  { plot: '5-3', building: 2, unit: 16, room: 1902, name: '小番茄', age: '7岁半' },
+  { plot: '6-3', building: 13, unit: 6, room: 1703, name: '', age: '400个月' },
+  { plot: '6-3', building: 11, unit: 15, room: 1002, name: '安安', age: '4岁' },
+  { plot: '5-3', building: 4, unit: 10, room: 1702, name: '', age: '450个月' },
+  { plot: '5-5', building: 6, unit: 3, room: 1702, name: '如意', age: '8岁' },
+  { plot: '5-5', building: 5, unit: 12, room: 1504, name: '格格', age: '3岁' },
+  { plot: '5-5', building: 5, unit: 3, room: 302, name: '球球', age: '6岁' },
+  { plot: '6-3', building: 9, unit: 19, room: 202, name: '小灰灰', age: '1岁零400个月' },
+  { plot: '5-3', building: 3, unit: 8, room: 1501, name: '西瓜', age: '9岁' },
+  { plot: '5-3', building: 1, unit: 18, room: 102, name: '铄铄', age: '9岁' },
+  { plot: '5-5', building: 5, unit: 12, room: 1904, name: '橙子、晗晗', age: '8岁 / 12岁' },
+  { plot: '6-5', building: 20, unit: 1, room: 902, name: '开心', age: '4岁' },
+  { plot: '6-5', building: 20, unit: 2, room: 101, name: '', age: '' },
+  { plot: '5-3', building: 4, unit: 10, room: 1301, name: '糯糯', age: '3岁' },
+  { plot: '6-5', building: 16, unit: 17, room: 502, name: '圈圈', age: '10岁' },
+  { plot: '6-3', building: 13, unit: 6, room: 2002, name: '雨', age: '10岁' },
+  { plot: '5-5', building: 6, unit: 3, room: 1103, name: 'kiana', age: '4岁' },
+];
+
+const PLOTS = {
+  '5-3': { label: '5-3 地块', x0: 40,  y0: 40,  x1: 455, y1: 288, grid: [[1, 2], [3, 4]] },
+  '5-5': { label: '5-5 地块', x0: 545, y0: 40,  x1: 960, y1: 288, grid: [[5], [6]] },
+  '6-3': { label: '6-3 地块', x0: 40,  y0: 368, x1: 455, y1: 852, grid: [[7, 8], [9, 10], [11, 12], [13]] },
+  '6-5': { label: '6-5 地块', x0: 545, y0: 368, x1: 960, y1: 852, grid: [[14], [15, 16], [17, 18], [19, 20]] }
+};
+
+const PLOT_ORDER = ['5-3', '5-5', '6-3', '6-5'];
+
+const BW = 160, BH = 96, GAPX = 22, GAPY = 22, LABEL_H = 34;
+
+function layoutBuildings() {
+  const buildings = {};
+  for (const plot of PLOT_ORDER) {
+    const cfg = PLOTS[plot];
+    const rows = cfg.grid.length;
+    const maxCols = Math.max.apply(null, cfg.grid.map(r => r.length));
+    const gridW = maxCols * BW + (maxCols - 1) * GAPX;
+    const left = (cfg.x0 + cfg.x1) / 2 - gridW / 2;
+    const top = cfg.y0 + LABEL_H;
+    cfg.grid.forEach((row, r) => {
+      const rowOffset = (maxCols - row.length) * (BW + GAPX) / 2;
+      row.forEach((num, c) => {
+        buildings[num] = {
+          plot: plot,
+          x: left + c * (BW + GAPX) + rowOffset,
+          y: top + r * (BH + GAPY),
+          w: BW,
+          h: BH
+        };
+      });
+    });
+  }
+  return buildings;
+}
+
+const BUILDINGS = layoutBuildings();
+
+const familyByBuilding = {};
+FAMILIES.forEach(f => {
+  (familyByBuilding[f.building] = familyByBuilding[f.building] || []).push(f);
+});
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
+function renderMap() {
+  const mapEl = document.getElementById('map');
+  const parts = [];
+  parts.push('<rect width="1000" height="900" fill="#160a28"/>');
+  parts.push('<rect x="470" y="0" width="60" height="900" fill="#2a6fb0"/>');
+  parts.push('<text x="500" y="180" fill="#bfe3ff" font-size="22" text-anchor="middle" transform="rotate(-90 500 180)" letter-spacing="8">春申塘</text>');
+  parts.push('<rect x="0" y="298" width="1000" height="50" fill="#5a5560"/>');
+  parts.push('<line x1="0" y1="323" x2="435" y2="323" stroke="#e8d9a8" stroke-width="3" stroke-dasharray="10 8"/>');
+  parts.push('<line x1="565" y1="323" x2="1000" y2="323" stroke="#e8d9a8" stroke-width="3" stroke-dasharray="10 8"/>');
+  parts.push('<text x="500" y="326" fill="#f2e3c0" font-size="20" text-anchor="middle" letter-spacing="8">贤定路</text>');
+
+  for (const plot of PLOT_ORDER) {
+    const c = PLOTS[plot];
+    parts.push('<rect x="' + c.x0 + '" y="' + c.y0 + '" width="' + (c.x1 - c.x0) + '" height="' + (c.y1 - c.y0) + '" rx="12" fill="rgba(90,150,90,0.16)" stroke="rgba(160,255,160,0.22)" stroke-dasharray="6 6"/>');
+    parts.push('<text x="' + ((c.x0 + c.x1) / 2) + '" y="' + (c.y0 + 22) + '" fill="#ffd166" font-size="24" font-weight="bold" text-anchor="middle">' + c.label + '</text>');
+  }
+
+  const nums = Object.keys(BUILDINGS).map(Number).sort((a, b) => a - b);
+  for (const num of nums) {
+    const b = BUILDINGS[num];
+    const fams = familyByBuilding[num] || [];
+    parts.push('<g class="building' + (fams.length ? ' has-candy' : '') + '" data-building="' + num + '">');
+    parts.push('<rect x="' + b.x + '" y="' + b.y + '" width="' + b.w + '" height="' + b.h + '" rx="10" fill="#4a3b5c" stroke="#c9a7ff" stroke-width="2"/>');
+    parts.push('<text x="' + (b.x + b.w / 2) + '" y="' + (b.y + 30) + '" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="bold">' + num + ' 栋</text>');
+    parts.push('</g>');
+    if (fams.length) {
+      const bx = b.x + b.w - 22;
+      const by = b.y + b.h - 22;
+      parts.push('<g class="badge" data-building="' + num + '" transform="translate(' + bx + ',' + by + ')">');
+      parts.push('<circle r="18" fill="#ff9f1c" stroke="#7a2e0a" stroke-width="2"/>');
+      parts.push('<text y="-4" text-anchor="middle" font-size="15">🎃</text>');
+      parts.push('<text y="13" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="bold">' + fams.length + '</text>');
+      parts.push('</g>');
+    }
+  }
+
+  mapEl.innerHTML = parts.join('');
+}
+
+function matches(f, q) {
+  if (!q) return true;
+  q = q.toLowerCase();
+  const addr = f.plot + '-' + f.building + '-' + f.unit + '-' + f.room;
+  return (f.name + f.age + (f.note || '') + addr).toLowerCase().indexOf(q) !== -1;
+}
+
+function renderList(q) {
+  const wrap = document.getElementById('list');
+  let html = '';
+  for (const plot of PLOT_ORDER) {
+    const fams = FAMILIES.filter(f => f.plot === plot && matches(f, q));
+    if (!fams.length) continue;
+    html += '<div class="plot-group"><h3>' + PLOTS[plot].label + '</h3>';
+    const byB = {};
+    fams.forEach(f => (byB[f.building] = byB[f.building] || []).push(f));
+    Object.keys(byB).sort((a, b) => a - b).forEach(bnum => {
+      const list = byB[bnum];
+      html += '<div class="building-group" data-building="' + bnum + '">';
+      html += '<div class="b-title">🏠 ' + bnum + ' 栋 <span class="candy-count">🎃 ×' + list.length + '</span></div><ul>';
+      list.forEach(f => {
+        const nm = f.name || '未留名';
+        const age = f.age ? '（' + f.age + '）' : '';
+        html += '<li>' + escapeHtml(f.building + '-' + f.unit + '-' + f.room) + '　' + escapeHtml(nm) + escapeHtml(age) + '</li>';
+      });
+      html += '</ul></div>';
+    });
+    html += '</div>';
+  }
+  wrap.innerHTML = html || '<p class="empty">没有匹配的家庭</p>';
+}
+
+function applyFilter(q) {
+  renderList(q);
+  document.querySelectorAll('.building, .badge').forEach(el => {
+    const num = Number(el.getAttribute('data-building'));
+    const fams = familyByBuilding[num] || [];
+    const any = fams.some(f => matches(f, q));
+    el.classList.toggle('dim', !any);
+  });
+}
+
+function floorOf(room) {
+  return Math.floor(room / 100);
+}
+
+function openBuilding(num) {
+  const b = BUILDINGS[num];
+  const list = familyByBuilding[num] || [];
+  const byFloor = {};
+  list.forEach(f => {
+    const fl = floorOf(f.room);
+    (byFloor[fl] = byFloor[fl] || []).push(f);
+  });
+  const floors = Object.keys(byFloor).map(Number).sort((a, z) => z - a);
+  let html = '<h3>' + PLOTS[b.plot].label + ' · ' + num + ' 栋</h3>' +
+    '<p class="sheet-sub">🎃 以下楼层门口有糖果，欢迎上门讨糖～</p>' +
+    '<div class="floor-map">';
+  floors.forEach(fl => {
+    html += '<div class="floor"><div class="floor-label">' + fl + 'F</div><div class="floor-units">';
+    byFloor[fl].forEach(f => {
+      const nm = f.name || '未留名';
+      const age = f.age ? ' · ' + f.age : '';
+      const note = f.note ? '（' + f.note + '）' : '';
+      html += '<div class="unit-card">' +
+        '<div class="addr">' + escapeHtml(num + '-' + f.unit + '-' + f.room) + escapeHtml(note) + '</div>' +
+        '<div class="kid">' + escapeHtml(nm) + escapeHtml(age) + '</div>' +
+        '</div>';
+    });
+    html += '</div></div>';
+  });
+  html += '</div>';
+  document.getElementById('sheet-content').innerHTML = html;
+  document.getElementById('sheet').hidden = false;
+}
+
+function closeSheet() {
+  document.getElementById('sheet').hidden = true;
+}
+
+document.getElementById('map').addEventListener('click', e => {
+  const t = e.target.closest('[data-building]');
+  if (t) openBuilding(Number(t.getAttribute('data-building')));
+});
+
+document.getElementById('list').addEventListener('click', e => {
+  const g = e.target.closest('[data-building]');
+  if (!g) return;
+  const num = Number(g.getAttribute('data-building'));
+  const node = document.querySelector('#map [data-building="' + num + '"]');
+  if (node) {
+    node.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'center' });
+    node.classList.remove('flash');
+    void node.getBoundingClientRect();
+    node.classList.add('flash');
+  }
+  openBuilding(num);
+});
+
+document.getElementById('search').addEventListener('input', e => {
+  applyFilter(e.target.value.trim());
+});
+
+document.querySelectorAll('[data-close]').forEach(el => {
+  el.addEventListener('click', closeSheet);
+});
+
+document.getElementById('total').textContent = FAMILIES.length;
+renderMap();
+renderList('');
+
+</script>
+</body>
+</html>
